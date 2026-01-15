@@ -1,0 +1,22 @@
+{
+  "name": "multi-signature-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Monorepo with Foundry contracts + Next.js frontend",
+  "scripts": {
+    "dev": "pnpm --filter frontend dev",
+    "build": "pnpm --filter frontend build",
+    "start": "pnpm --filter frontend start",
+    "test": "pnpm --filter contracts test",
+    "forge:build": "pnpm --filter contracts build",
+    "forge:test": "pnpm --filter contracts test",
+    "forge:script": "pnpm --filter contracts script",
+    "lint": "pnpm --filter frontend lint && pnpm --filter contracts lint",
+    "format": "pnpm --filter frontend format",
+    "postinstall": "pnpm generate:abis",
+    "generate:abis": "pnpm --filter contracts generate:abis"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.4"
+  }
+}

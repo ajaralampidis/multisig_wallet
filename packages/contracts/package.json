@@ -1,0 +1,9 @@
+{
+  "name": "@multi-signature/contracts",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "forge build",
+    "test": "forge test",
+    "generate:abis": "forge build && mkdir -p ../../apps/frontend/lib/abis && cp -r out/*.sol/*.json ../../apps/frontend/lib/abis/"
+  }
+}
