@@ -10,6 +10,8 @@ contract MultiSignatureWalletFactory {
     address public immutable multiSignatureWalletImplementation;
     address[] private multiSignatureWallets;
 
+    uint256 constant DEFAULT_SIGNATURES_REQUIRED = 1;
+
     event MultiSignatureWalletCreated(address indexed multiSignatureWallet);
 
     constructor() {
@@ -22,8 +24,10 @@ contract MultiSignatureWalletFactory {
      */
     function createChild() external {
         // Deploy a clone pointing to the implementation
-        address clone = multiSignatureWalletImplementation.clone();
-        MultiSignatureWallet(clone).initialize(msg.sender);
+        address payable clone = payable(multiSignatureWalletImplementation.clone());
+        address[] memory initial_signers = new address[](1);
+        initial_signers[0] = msg.sender;
+        MultiSignatureWallet(clone).initialize(initial_signers, DEFAULT_SIGNATURES_REQUIRED);
         multiSignatureWallets.push(clone);
         emit MultiSignatureWalletCreated(clone);
     }
@@ -45,8 +49,10 @@ contract MultiSignatureWalletFactory {
      * @param salt - a random bytes32 value used to generate the deterministic address of a MultiSignatureWallet clone
      */
     function createChildDeterministic(bytes32 salt) external returns (address) {
-        address clone = Clones.cloneDeterministic(multiSignatureWalletImplementation, salt);
-        MultiSignatureWallet(clone).initialize(msg.sender);
+        address payable clone = payable(Clones.cloneDeterministic(multiSignatureWalletImplementation, salt));
+        address[] memory initial_signers = new address[](1);
+        initial_signers[0] = msg.sender;
+        MultiSignatureWallet(clone).initialize(initial_signers, DEFAULT_SIGNATURES_REQUIRED);
         multiSignatureWallets.push(clone);
         emit MultiSignatureWalletCreated(clone);
 

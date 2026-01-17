@@ -8,7 +8,7 @@ import {MintableERC20} from "src/MintableERC20.sol";
 import {MultiSignatureWalletFactory} from "src/MultiSignatureWalletFactory.sol";
 // import {UniV2Pool} from "src/UniV2Pool.sol";
 
-contract DeployTest is Test {
+contract TestDeploy is Test {
     Deploy public deployScript;
 
     HelperConfig public config;
