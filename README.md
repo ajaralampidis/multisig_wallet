@@ -4,7 +4,9 @@ Simple monorepo of a multi signature app.
 
 ## Repository Organization
 
-### `./apps/frontend/*` — Next.js app
+### `./packages/*` — Contains the specific repos that constitute this monorepo
+
+### `./packages/frontend/*` — Next.js app
 
 ### `./packages/contracts/*` — Solidity smart contracts (Foundry)
 

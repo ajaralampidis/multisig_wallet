@@ -4,9 +4,9 @@
   "private": true,
   "description": "Monorepo with Foundry contracts + Next.js frontend",
   "scripts": {
-    "dev": "pnpm --filter frontend dev",
-    "build": "pnpm --filter frontend build",
-    "start": "pnpm --filter frontend start",
+    "dev": "pnpm --filter @multi-signature/frontend dev",
+    "build": "pnpm --filter @multi-signature/frontend build",
+    "start": "pnpm --filter @multi-signature/frontend start",
     "test": "pnpm --filter @multi-signature/contracts test",
     "forge:build": "pnpm --filter @multi-signature/contracts build",
     "forge:test": "pnpm --filter @multi-signature/contracts test",
@@ -14,8 +14,8 @@
     "forge:deploy": "pnpm --filter @multi-signature/contracts deploy-contracts",
     "generate:abis": "pnpm --filter @multi-signature/contracts generate:abis",
     "deploy-local": "pnpm generate:abis && pnpm forge:deploy",
-    "lint": "pnpm --filter frontend lint && pnpm --filter @multi-signature/contracts lint",
-    "format": "pnpm --filter frontend format",
+    "lint": "pnpm --filter @multi-signature/frontend lint && pnpm --filter @multi-signature/contracts lint",
+    "format": "pnpm --filter @multi-signature/frontend format",
     "postinstall": "pnpm generate:abis"
   },
   "devDependencies": {
