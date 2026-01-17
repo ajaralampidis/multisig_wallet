@@ -1,69 +1,45 @@
 // SPDX-License-Identifier: MIT
-
 pragma solidity ^0.8.31;
 
 import {Script} from "forge-std/Script.sol";
-import {MintableERC20} from "../src/MintableERC20.sol";
-// import {UniV2Pool} from "../src/UniV2Pool.sol";
-import {MultiSignatureWalletFactory} from "../src/MultiSignatureWalletFactory.sol";
 
 contract HelperConfig is Script {
     struct NetworkConfig {
-        address help;
-        address problm;
+        address helpToken;
+        address problmToken;
         address multiSignatureWalletFactory;
-        // address helpProblemPool;
+        address uniV2Pool;
     }
-    uint32 constant SEPOLIA_CHAIN_ID = 11155111;
 
-    // uint256 public constant DEFAULT_ANVIL_KEY = 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80;
+    uint32 constant SEPOLIA_CHAIN_ID = 11155111;
 
     NetworkConfig public activeNetworkConfig;
 
     constructor() {
         if (block.chainid == SEPOLIA_CHAIN_ID) {
-            activeNetworkConfig = getOrCreateSepoliaConfig();
+            activeNetworkConfig = getSepoliaConfig();
         } else {
-            activeNetworkConfig = getOrCreateAnvilConfig();
+            activeNetworkConfig = getAnvilConfig();
         }
     }
 
-    /**
-     * Since we intend to deploy to Sepolia, we won't need to deploy multiple times
-     */
-    function getOrCreateSepoliaConfig() public returns (NetworkConfig memory) {
-        // UniV2Pool, MultiSignatureWalletFactory, HELP and PROBLM could be deployed already on sepolia
-        // 1. We should get or store their addresses somewhere TODO
-        // 2. if (we have addresses) { return NetworkConfig({...addresses})}
-        // 3. if (we don't have addresses) { deploy whatever needs to be deployed }
-        // TODO: remove the code bellow
-        vm.startBroadcast();
-        MintableERC20 help = new MintableERC20("Help", "HELP", msg.sender, 1000e8);
-        MintableERC20 problm = new MintableERC20("Problems", "PROBLM", msg.sender, 1000e8);
-        MultiSignatureWalletFactory multiSignatureWalletFactory = new MultiSignatureWalletFactory();
-        vm.stopBroadcast();
-
+    function getSepoliaConfig() public pure returns (NetworkConfig memory) {
+        // TODO: Replace with real deployed addresses on Sepolia
         return NetworkConfig({
-            help: address(help),
-            problm: address(problm),
-            multiSignatureWalletFactory: address(multiSignatureWalletFactory)
+            helpToken: address(0), // e.g. 0xRealHelpAddress
+            problmToken: address(0), // e.g. 0xRealProblmAddress
+            multiSignatureWalletFactory: address(0), // e.g. 0xRealFactoryAddress
+            uniV2Pool: address(0) // e.g. 0xRealPoolAddress
         });
     }
 
-    /**
-     * We don care about anvil deployments. We deploy every time.
-     */
-    function getOrCreateAnvilConfig() public returns (NetworkConfig memory) {
-        vm.startBroadcast();
-        MintableERC20 help = new MintableERC20("Help", "HELP", msg.sender, 1000e8);
-        MintableERC20 problm = new MintableERC20("Problems", "PROBLM", msg.sender, 1000e8);
-        MultiSignatureWalletFactory multiSignatureWalletFactory = new MultiSignatureWalletFactory();
-        vm.stopBroadcast();
-
+    function getAnvilConfig() public pure returns (NetworkConfig memory) {
+        // For Anvil/local, we deploy new ones via separate scripts → return zeros as placeholders
         return NetworkConfig({
-            help: address(help),
-            problm: address(problm),
-            multiSignatureWalletFactory: address(multiSignatureWalletFactory)
+            helpToken: address(0),
+            problmToken: address(0),
+            multiSignatureWalletFactory: address(0),
+            uniV2Pool: address(0)
         });
     }
 }

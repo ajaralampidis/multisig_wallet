@@ -7,14 +7,16 @@
     "dev": "pnpm --filter frontend dev",
     "build": "pnpm --filter frontend build",
     "start": "pnpm --filter frontend start",
-    "test": "pnpm --filter contracts test",
-    "forge:build": "pnpm --filter contracts build",
-    "forge:test": "pnpm --filter contracts test",
-    "forge:script": "pnpm --filter contracts script",
-    "lint": "pnpm --filter frontend lint && pnpm --filter contracts lint",
+    "test": "pnpm --filter @multi-signature/contracts test",
+    "forge:build": "pnpm --filter @multi-signature/contracts build",
+    "forge:test": "pnpm --filter @multi-signature/contracts test",
+    "forge:script": "pnpm --filter @multi-signature/contracts script",
+    "forge:deploy": "pnpm --filter @multi-signature/contracts deploy",
+    "generate:abis": "pnpm --filter @multi-signature/contracts generate:abis",
+    "deploy-local": "pnpm forge:build && pnpm forge:deploy && pnpm generate:abis",
+    "lint": "pnpm --filter frontend lint && pnpm --filter @multi-signature/contracts lint",
     "format": "pnpm --filter frontend format",
-    "postinstall": "pnpm generate:abis",
-    "generate:abis": "pnpm --filter contracts generate:abis"
+    "postinstall": "pnpm generate:abis"
   },
   "devDependencies": {
     "typescript": "^5.5.4"

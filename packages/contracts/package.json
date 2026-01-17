@@ -4,6 +4,7 @@
   "scripts": {
     "build": "forge build",
     "test": "forge test",
+    "deploy": "forge script script/Deploy.s.sol --rpc-url http://127.0.0.1:8545 --broadcast",
     "generate:abis": "forge build && mkdir -p ../../apps/frontend/lib/abis && cp -r out/*.sol/*.json ../../apps/frontend/lib/abis/"
   }
 }

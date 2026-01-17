@@ -6,7 +6,7 @@ import {Deploy} from "script/Deploy.s.sol";
 import {HelperConfig} from "script/HelperConfig.s.sol";
 import {MintableERC20} from "src/MintableERC20.sol";
 import {MultiSignatureWalletFactory} from "src/MultiSignatureWalletFactory.sol";
-// import {UniV2Pool} from "src/UniV2Pool.sol";
+import {UniV2Pool} from "src/UniV2Pool.sol";
 
 contract TestDeploy is Test {
     Deploy public deployScript;
@@ -15,19 +15,14 @@ contract TestDeploy is Test {
     MintableERC20 public helpToken;
     MintableERC20 public problmToken;
     MultiSignatureWalletFactory public multiSignatureWalletFactory;
-    // UniV2Pool public pool;
+    UniV2Pool public pool;
 
     // address public deployer;
 
     function setUp() public {
         deployScript = new Deploy();
 
-        (
-            config,
-            helpToken,
-            problmToken,
-            multiSignatureWalletFactory /* , pool */
-        ) = deployScript.run();
+        (config, helpToken, problmToken, multiSignatureWalletFactory, pool) = deployScript.run();
 
         // Optional: figure out who would be the deployer (useful for later tests)
         // deployer = address(uint160(uint256(keccak256("deployer")))); // dummy or use vm.addr(1)

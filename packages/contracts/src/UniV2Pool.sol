@@ -7,16 +7,14 @@ import {IERC20} from "@openzeppelin/contracts/interfaces/IERC20.sol";
 /**
  * @title UniV2Pool simple clone
  * @notice This is created just for testing and demo purposes.
- * @dev TODO: I need to change this dex to handle token-token
- */
-
-/**
- * @notice Simple DEX contract that allows users to swap ETH for CORN and CORN for ETH
+ * @notice Simple DEX contract that allows users to swap TokenA for TokenB and TokenB for TokenA
+ * @dev This is heavily inspired from speedrunethereum dex challenge https://github.com/scaffold-eth/se-2-challenges/tree/challenge-dex
  */
 contract UniV2Pool {
     /* ========== GLOBAL VARIABLES ========== */
 
-    IERC20 token; //instantiates the imported contract
+    IERC20 tokenA; //instantiates the imported contract
+    IERC20 tokenB; //instantiates the imported contract
     uint256 public totalLiquidity;
     mapping(address => uint256) public liquidity;
 
@@ -27,34 +25,39 @@ contract UniV2Pool {
     /**
      * @notice Emitted when liquidity provided to DEX and mints LPTs.
      */
-    event LiquidityProvided(address liquidityProvider, uint256 liquidityMinted, uint256 ethInput, uint256 tokensInput);
+    event LiquidityProvided(
+        address liquidityProvider, uint256 liquidityMinted, uint256 tokenAInput, uint256 tokenBInput
+    );
 
     /**
      * @notice Emitted when liquidity removed from DEX and decreases LPT count within DEX.
      */
     event LiquidityRemoved(
-        address liquidityRemover, uint256 liquidityWithdrawn, uint256 tokensOutput, uint256 ethOutput
+        address liquidityRemover, uint256 liquidityWithdrawn, uint256 tokenAOutput, uint256 tokenBOutput
     );
 
     /* ========== CONSTRUCTOR ========== */
 
-    constructor(address tokenAddr) {
-        token = IERC20(tokenAddr); //specifies the token address that will hook into the interface and be used through the variable 'token'
+    constructor(address tokenAAddr, address tokenBAddr) {
+        tokenA = IERC20(tokenAAddr); //specifies the token address that will hook into the interface and be used through the variable 'tokenA'
+        tokenB = IERC20(tokenBAddr); //specifies the token address that will hook into the interface and be used through the variable 'tokenB'
     }
 
     /* ========== MUTATIVE FUNCTIONS ========== */
 
     /**
-     * @notice initializes amount of tokens that will be transferred to the DEX itself from the erc20 contract. Loads contract up with both ETH and CORN.
-     * @param tokens amount to be transferred to DEX
+     * @notice initializes amount of tokens that will be transferred to the DEX itself from the erc20 contract. Loads contract up with both TokenA and TokenB.
+     * @param tokenAAmount amount of TokenA to be transferred to DEX
+     * @param tokenBAmount amount of TokenB to be transferred to DEX
      * @return totalLiquidity is the number of LPTs minting as a result of deposits made to DEX contract
-     * NOTE: since ratio is 1:1, this is fine to initialize the totalLiquidity as equal to eth balance of contract.
+     * NOTE: since ratio is 1:1, this is fine to initialize the totalLiquidity as equal to tokenA balance of contract.
      */
-    function init(uint256 tokens) public payable returns (uint256) {
+    function init(uint256 tokenAAmount, uint256 tokenBAmount) public returns (uint256) {
         require(totalLiquidity == 0, "DEX: init - already has liquidity");
-        totalLiquidity = address(this).balance;
+        totalLiquidity = tokenA.balanceOf(address(this)); // or use tokenB, since 1:1
         liquidity[msg.sender] = totalLiquidity;
-        require(token.transferFrom(msg.sender, address(this), tokens), "DEX: init - transfer did not transact");
+        require(tokenA.transferFrom(msg.sender, address(this), tokenAAmount), "DEX: init - transfer did not transact");
+        require(tokenB.transferFrom(msg.sender, address(this), tokenBAmount), "DEX: init - transfer did not transact");
         return totalLiquidity;
     }
 
@@ -68,10 +71,10 @@ contract UniV2Pool {
     }
 
     /**
-     * @notice returns the current price of ETH in CORN
+     * @notice returns the current price of TokenA in TokenB
      */
     function currentPrice() public view returns (uint256 _currentPrice) {
-        _currentPrice = price(1 ether, address(this).balance, token.balanceOf(address(this)));
+        _currentPrice = price(1 ether, tokenA.balanceOf(address(this)), tokenB.balanceOf(address(this)));
     }
 
     /**
@@ -89,92 +92,92 @@ contract UniV2Pool {
     }
 
     /**
-     * @notice sends Ether to DEX in exchange for $CORN
+     * @notice sends TokenA to DEX in exchange for TokenB
      */
-    function ethToToken() internal returns (uint256 tokenOutput) {
-        require(msg.value > 0, "cannot swap 0 ETH");
-        uint256 ethReserve = address(this).balance - msg.value;
-        uint256 tokenReserve = token.balanceOf(address(this));
-        tokenOutput = price(msg.value, ethReserve, tokenReserve);
+    function tokenAToTokenB(uint256 tokenAInput) internal returns (uint256 tokenBOutput) {
+        require(tokenAInput > 0, "cannot swap 0 TokenA");
+        uint256 tokenAReserve = tokenA.balanceOf(address(this));
+        uint256 tokenBReserve = tokenB.balanceOf(address(this));
+        tokenBOutput = price(tokenAInput, tokenAReserve, tokenBReserve);
 
-        require(token.transfer(msg.sender, tokenOutput), "ethToToken(): reverted swap.");
-        emit Swap(msg.sender, address(0), msg.value, address(token), tokenOutput);
-        return tokenOutput;
+        require(tokenB.transfer(msg.sender, tokenBOutput), "tokenAToTokenB(): reverted swap.");
+        emit Swap(msg.sender, address(tokenA), tokenAInput, address(tokenB), tokenBOutput);
+        return tokenBOutput;
     }
 
     /**
-     * @notice sends $CORN tokens to DEX in exchange for Ether
+     * @notice sends TokenB to DEX in exchange for TokenA
      */
-    function tokenToEth(uint256 tokenInput) internal returns (uint256 ethOutput) {
-        require(tokenInput > 0, "cannot swap 0 tokens");
-        require(token.balanceOf(msg.sender) >= tokenInput, "insufficient token balance");
-        require(token.allowance(msg.sender, address(this)) >= tokenInput, "insufficient allowance");
-        uint256 tokenReserve = token.balanceOf(address(this));
-        ethOutput = price(tokenInput, tokenReserve, address(this).balance);
-        require(token.transferFrom(msg.sender, address(this), tokenInput), "tokenToEth(): reverted swap.");
-        (bool sent,) = msg.sender.call{value: ethOutput}("");
-        require(sent, "tokenToEth: revert in transferring eth to you!");
-        emit Swap(msg.sender, address(token), tokenInput, address(0), ethOutput);
-        return ethOutput;
+    function tokenBToTokenA(uint256 tokenBInput) internal returns (uint256 tokenAOutput) {
+        require(tokenBInput > 0, "cannot swap 0 TokenB");
+        uint256 tokenAReserve = tokenA.balanceOf(address(this));
+        uint256 tokenBReserve = tokenB.balanceOf(address(this));
+        tokenAOutput = price(tokenBInput, tokenBReserve, tokenAReserve);
+
+        require(tokenA.transfer(msg.sender, tokenAOutput), "tokenBToTokenA(): reverted swap.");
+        emit Swap(msg.sender, address(tokenB), tokenBInput, address(tokenA), tokenAOutput);
+        return tokenAOutput;
     }
 
     /**
-     * @notice allows users to swap ETH for $CORN or $CORN for ETH with a single method
+     * @notice allows users to swap TokenA for TokenB or TokenB for TokenA with a single method
      */
-    function swap(uint256 inputAmount) public payable returns (uint256 outputAmount) {
-        if (msg.value > 0 && inputAmount == msg.value) {
-            outputAmount = ethToToken();
+    function swap(address inputToken, uint256 inputAmount) public returns (uint256 outputAmount) {
+        require(inputAmount > 0, "cannot swap 0 tokens");
+        require(inputToken == address(tokenA) || inputToken == address(tokenB), "invalid input token");
+
+        if (inputToken == address(tokenA)) {
+            require(tokenA.balanceOf(msg.sender) >= inputAmount, "insufficient TokenA balance");
+            require(tokenA.allowance(msg.sender, address(this)) >= inputAmount, "insufficient TokenA allowance");
+            require(tokenA.transferFrom(msg.sender, address(this), inputAmount), "swap: TokenA transfer failed");
+            outputAmount = tokenAToTokenB(inputAmount);
         } else {
-            outputAmount = tokenToEth(inputAmount);
+            require(tokenB.balanceOf(msg.sender) >= inputAmount, "insufficient TokenB balance");
+            require(tokenB.allowance(msg.sender, address(this)) >= inputAmount, "insufficient TokenB allowance");
+            require(tokenB.transferFrom(msg.sender, address(this), inputAmount), "swap: TokenB transfer failed");
+            outputAmount = tokenBToTokenA(inputAmount);
         }
+
         emit PriceUpdated(currentPrice());
     }
 
     /**
-     * @notice allows deposits of $CORN and $ETH to liquidity pool
-     * NOTE: parameter is the msg.value sent with this function call. That amount is used to determine the amount of $CORN needed as well and taken from the depositor.
+     * @notice allows deposits of TokenA and TokenB to liquidity pool
      * NOTE: user has to make sure to give DEX approval to spend their tokens on their behalf by calling approve function prior to this function call.
      * NOTE: Equal parts of both assets will be removed from the user's wallet with respect to the price outlined by the AMM.
      */
-    function deposit() public payable returns (uint256 tokensDeposited) {
-        require(msg.value > 0, "Must send value when depositing");
-        uint256 ethReserve = address(this).balance - msg.value;
-        uint256 tokenReserve = token.balanceOf(address(this));
-        uint256 tokenDeposit;
+    function deposit(uint256 tokenAAmount, uint256 tokenBAmount) public returns (uint256 liquidityMinted) {
+        require(tokenAAmount > 0 && tokenBAmount > 0, "Must send both tokens when depositing");
+        uint256 tokenAReserve = tokenA.balanceOf(address(this));
+        uint256 tokenBReserve = tokenB.balanceOf(address(this));
+        uint256 liquidityFromA = (tokenAAmount * totalLiquidity) / tokenAReserve;
+        uint256 liquidityFromB = (tokenBAmount * totalLiquidity) / tokenBReserve;
+        liquidityMinted = liquidityFromA < liquidityFromB ? liquidityFromA : liquidityFromB; // take the min to maintain ratio
 
-        tokenDeposit = ((msg.value * tokenReserve) / ethReserve) + 1;
-
-        require(token.balanceOf(msg.sender) >= tokenDeposit, "insufficient token balance");
-        require(token.allowance(msg.sender, address(this)) >= tokenDeposit, "insufficient allowance");
-
-        uint256 liquidityMinted = (msg.value * totalLiquidity) / ethReserve;
         liquidity[msg.sender] += liquidityMinted;
         totalLiquidity += liquidityMinted;
 
-        require(token.transferFrom(msg.sender, address(this), tokenDeposit));
-        emit LiquidityProvided(msg.sender, liquidityMinted, msg.value, tokenDeposit);
-        return tokenDeposit;
+        require(tokenA.transferFrom(msg.sender, address(this), tokenAAmount));
+        require(tokenB.transferFrom(msg.sender, address(this), tokenBAmount));
+        emit LiquidityProvided(msg.sender, liquidityMinted, tokenAAmount, tokenBAmount);
+        return liquidityMinted;
     }
 
     /**
-     * @notice allows withdrawal of $CORN and $ETH from liquidity pool
+     * @notice allows withdrawal of TokenA and TokenB from liquidity pool
      * NOTE: with this current code, the msg caller could end up getting very little back if the liquidity is super low in the pool. I guess they could see that with the UI.
      */
-    function withdraw(uint256 amount) public returns (uint256 ethAmount, uint256 tokenAmount) {
+    function withdraw(uint256 amount) public returns (uint256 tokenAAmount, uint256 tokenBAmount) {
         require(liquidity[msg.sender] >= amount, "withdraw: sender does not have enough liquidity to withdraw.");
-        uint256 ethReserve = address(this).balance;
-        uint256 tokenReserve = token.balanceOf(address(this));
-        uint256 ethWithdrawn;
-
-        ethWithdrawn = (amount * ethReserve) / totalLiquidity;
-
-        tokenAmount = (amount * tokenReserve) / totalLiquidity;
+        uint256 tokenAReserve = tokenA.balanceOf(address(this));
+        uint256 tokenBReserve = tokenB.balanceOf(address(this));
+        tokenAAmount = (amount * tokenAReserve) / totalLiquidity;
+        tokenBAmount = (amount * tokenBReserve) / totalLiquidity;
         liquidity[msg.sender] -= amount;
         totalLiquidity -= amount;
-        (bool sent,) = payable(msg.sender).call{value: ethWithdrawn}("");
-        require(sent, "withdraw(): revert in transferring eth to you!");
-        require(token.transfer(msg.sender, tokenAmount));
-        emit LiquidityRemoved(msg.sender, amount, tokenAmount, ethWithdrawn);
-        return (ethWithdrawn, tokenAmount);
+        require(tokenA.transfer(msg.sender, tokenAAmount));
+        require(tokenB.transfer(msg.sender, tokenBAmount));
+        emit LiquidityRemoved(msg.sender, amount, tokenAAmount, tokenBAmount);
+        return (tokenAAmount, tokenBAmount);
     }
 }
