@@ -4,7 +4,6 @@ pragma solidity ^0.8.31;
 import {Script} from "forge-std/Script.sol";
 import {console} from "forge-std/console.sol";
 import {UniV2Pool} from "src/UniV2Pool.sol";
-import {MintableERC20} from "src/MintableERC20.sol";
 
 contract DeployUniV2Pool is Script {
     function run(address helpTokenAddr, address problmTokenAddr) external returns (UniV2Pool pool) {

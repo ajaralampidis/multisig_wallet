@@ -11,9 +11,9 @@
     "forge:build": "pnpm --filter @multi-signature/contracts build",
     "forge:test": "pnpm --filter @multi-signature/contracts test",
     "forge:script": "pnpm --filter @multi-signature/contracts script",
-    "forge:deploy": "pnpm --filter @multi-signature/contracts deploy",
+    "forge:deploy": "pnpm --filter @multi-signature/contracts deploy-contracts",
     "generate:abis": "pnpm --filter @multi-signature/contracts generate:abis",
-    "deploy-local": "pnpm forge:build && pnpm forge:deploy && pnpm generate:abis",
+    "deploy-local": "pnpm generate:abis && pnpm forge:deploy",
     "lint": "pnpm --filter frontend lint && pnpm --filter @multi-signature/contracts lint",
     "format": "pnpm --filter frontend format",
     "postinstall": "pnpm generate:abis"

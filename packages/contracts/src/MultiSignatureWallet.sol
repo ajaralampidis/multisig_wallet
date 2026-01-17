@@ -50,8 +50,12 @@ contract MultiSignatureWallet is Initializable {
 
     ////// Modifiers
     modifier onlySelf() {
-        if (msg.sender != address(this)) revert MultiSignatureWallet__OnlySelfAllowed();
+        _onlySelf();
         _;
+    }
+
+    function _onlySelf() internal view {
+        if (msg.sender != address(this)) revert MultiSignatureWallet__OnlySelfAllowed();
     }
 
     // constructor() {} // Initializable must not have constructor
