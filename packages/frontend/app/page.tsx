@@ -1,22 +1,21 @@
-import MultiSignatureWallet from "@contracts/out/MultiSignatureWallet.sol/MultiSignatureWallet.json"
+import MultiSignatureWallet from '@contracts/out/MultiSignatureWallet.sol/MultiSignatureWallet.json'
 
 /**
- * 
+ *
  * ================
- * 1. Use the path aliases to print the ABIs 
- * 2. If everything works commit
- * 3. Install wagmi and viem
- * 4. Keep on rolling
+ * 1. Use reown + wagmi + viem
+ * 2. Allow wallet connection
+ * 3. Allow to check ERC20 balances → we will need the deployments/anvil.json
  * ================
- * 
+ *
  */
 
 export default function Home() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 sm:items-start">
-       <div> {JSON.stringify(MultiSignatureWallet.abi)} </div>
+      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between px-16 py-32 sm:items-start">
+        <div> {JSON.stringify(MultiSignatureWallet.abi)} </div>
       </main>
     </div>
-  );
+  )
 }

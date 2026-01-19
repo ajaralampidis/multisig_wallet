@@ -21,7 +21,7 @@
     ],
     "paths": {
       "@/*": ["./*"],
-      "@contracts/*": ["../contracts/*"],
+      "@contracts/*": ["../contracts/*"]
     }
   },
   "include": [
@@ -33,5 +33,4 @@
     "**/*.mts"
   ],
   "exclude": ["node_modules"]
- 
 }
