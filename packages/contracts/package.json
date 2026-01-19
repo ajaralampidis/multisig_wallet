@@ -2,9 +2,11 @@
   "name": "@multi-signature/contracts",
   "version": "1.0.0",
   "scripts": {
+    "wallet:setup": "./script/bash/keystore.sh",
+    "wallet:list": "cast wallet list",
     "build": "forge build",
     "test": "forge test",
-    "deploy-contracts": "forge script script/Deploy.s.sol --rpc-url http://127.0.0.1:8545 --broadcast",
-    "generate:abis": "forge build && mkdir -p ../frontend/lib/abis && cp -r out/*.sol/*.json ../frontend/lib/abis/"
+    "deploy:anvil": "forge script script/Deploy.s.sol --rpc-url http://127.0.0.1:8545 --broadcast",
+    "deploy:sepolia": "echo '⚠️⚠️ TODO: finish this script (deploy to sepolia and verify on etherscan) ⚠️⚠️ \n\n' && exit 1 && forge script script/Deploy.s.sol --rpc-url https://sepolia.infura.io/v3/YOUR_INFURA_KEY --account multisig-sepolia --sender $ADDRESS_MULTISIG_SEPOLIA --password $PASS_MULTISIG_SEPOLIA --broadcast --verify --etherscan-api-key $ETHERSCAN_API_KEY"
   }
 }

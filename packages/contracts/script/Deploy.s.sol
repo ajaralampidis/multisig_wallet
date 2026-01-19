@@ -77,6 +77,8 @@ contract Deploy is Script {
         console.log("Factory:            ", address(factory));
         console.log("UniV2Pool:          ", address(pool));
 
+        // TODO: Review that we print here everything we need to include in /deployments
+
         return (config, helpToken, problmToken, factory, pool);
     }
 }

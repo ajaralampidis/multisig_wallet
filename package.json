@@ -4,19 +4,15 @@
   "private": true,
   "description": "Monorepo with Foundry contracts + Next.js frontend",
   "scripts": {
-    "dev": "pnpm --filter @multi-signature/frontend dev",
-    "build": "pnpm --filter @multi-signature/frontend build",
+    "dev": "pnpm deploy:anvil && pnpm --filter @multi-signature/frontend dev",
+    "build": "pnpm --filter @multi-signature/contracts build && pnpm --filter @multi-signature/frontend build",
     "start": "pnpm --filter @multi-signature/frontend start",
-    "test": "pnpm --filter @multi-signature/contracts test",
-    "forge:build": "pnpm --filter @multi-signature/contracts build",
+    "wallet:setup": "pnpm --filter @multi-signature/contracts wallet:setup",
+    "wallet:list": "pnpm --filter @multi-signature/contracts wallet:list",
     "forge:test": "pnpm --filter @multi-signature/contracts test",
-    "forge:script": "pnpm --filter @multi-signature/contracts script",
-    "forge:deploy": "pnpm --filter @multi-signature/contracts deploy-contracts",
-    "generate:abis": "pnpm --filter @multi-signature/contracts generate:abis",
-    "deploy-local": "pnpm generate:abis && pnpm forge:deploy",
+    "deploy:anvil": "pnpm --filter @multi-signature/contracts deploy:anvil",
     "lint": "pnpm --filter @multi-signature/frontend lint && pnpm --filter @multi-signature/contracts lint",
-    "format": "pnpm --filter @multi-signature/frontend format",
-    "postinstall": "pnpm generate:abis"
+    "format": "pnpm --filter @multi-signature/frontend format"
   },
   "devDependencies": {
     "typescript": "^5.5.4"

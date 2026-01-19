@@ -1,0 +1,32 @@
+{
+  "chainId": 31337,
+  "deployedAt": "2026-01-19T01:21:00Z",
+  "deployer": "0xYourDeployerAddress",
+  "compilerVersion": "v0.8.31",
+  "contracts": {
+    "MultiSignatureWalletFactory": {
+      "address": "0xExampleFactoryAddress",
+      "constructorArgs": "[]",
+      "sourcePath": "src/MultiSignatureWalletFactory.sol",
+      "txHash": "0xExampleTxHash"
+    },
+    "UniV2Pool": {
+      "address": "0xExamplePoolAddress",
+      "constructorArgs": "0xEncodedArgsHex",
+      "sourcePath": "src/UniV2Pool.sol",
+      "txHash": "0xExampleTxHash"
+    },
+    "MintableERC20_HELP": {
+      "address": "0xExampleHelpAddress",
+      "constructorArgs": "0xEncodedArgsHex",
+      "sourcePath": "src/MintableERC20.sol",
+      "txHash": "0xExampleTxHash"
+    },
+    "MintableERC20_PROBLM": {
+      "address": "0xExampleProblmAddress",
+      "constructorArgs": "0xEncodedArgsHex",
+      "sourcePath": "src/MintableERC20.sol",
+      "txHash": "0xExampleTxHash"
+    }
+  }
+}
