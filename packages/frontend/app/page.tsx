@@ -1,11 +1,8 @@
-import MultiSignatureWallet from '@contracts/out/MultiSignatureWallet.sol/MultiSignatureWallet.json'
-import { ConnectWallet } from './components/WagmiWalletConnector'
-
+import { ConnectButton } from '@rainbow-me/rainbowkit'
+import { MintableERC20 } from './components/MintableERC20'
 /**
  *
  * ================
- * 1. Use reown + wagmi + viem
- * 2. Allow wallet connection
  * 3. Allow to check ERC20 balances → we will need the deployments/anvil.json
  * ================
  *
@@ -13,10 +10,15 @@ import { ConnectWallet } from './components/WagmiWalletConnector'
 
 export default function Home() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between px-16 py-32 sm:items-start">
-        <ConnectWallet />
-        <div> {JSON.stringify(MultiSignatureWallet.abi)} </div>
+    <div className="mx-auto min-h-screen w-full max-w-3xl">
+      <main className="m-4 flex flex-col gap-2">
+        <ConnectButton
+          showBalance={false}
+          chainStatus="icon"
+          accountStatus="address"
+        />
+        <MintableERC20 mintableToken="HELP" />
+        <MintableERC20 mintableToken="PROBLM" />
       </main>
     </div>
   )
