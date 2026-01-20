@@ -3,8 +3,10 @@ import { useConnection, useReadContract, useWriteContract } from 'wagmi'
 
 import MintableERC20Artifact from '@contracts/out/MintableERC20.sol/MintableERC20.json' with { type: 'json' }
 
-const HELP_TOKEN_ADDRESS = '0x5fbdb2315678afecb367f032d93f642f64180aa3'
-const PROBLM_TOKEN_ADDRESS = '0xe7f1725e7734ce288f8367e1bb143e90bb3f0512'
+// This whole file can be replaced with wagmi cli
+
+const HELP_TOKEN_ADDRESS = '0x5fbdb2315678afecb367f032d93f642f64180aa3' // this can be fetched from broadcast dir
+const PROBLM_TOKEN_ADDRESS = '0xe7f1725e7734ce288f8367e1bb143e90bb3f0512' // this can be fetched from broadcast dir
 
 const tokenAbi = MintableERC20Artifact.abi
 

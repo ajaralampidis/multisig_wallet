@@ -7,13 +7,6 @@ yarn-error.log
 .next
 out
 
-# Foundry
-cache/
-out/
-broadcast/
-packages/contracts/lib/
-lib/
-
 # Misc
 .DS_Store
 .env.local
