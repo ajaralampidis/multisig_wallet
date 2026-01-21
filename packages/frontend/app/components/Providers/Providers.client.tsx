@@ -1,18 +1,18 @@
 'use client'
-import '@rainbow-me/rainbowkit/styles.css'
 
+import '@rainbow-me/rainbowkit/styles.css'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { type ReactNode, useState } from 'react'
-import { type State, WagmiProvider } from 'wagmi'
-import { RainbowKitProvider } from '@rainbow-me/rainbowkit' // Still use their provider for UI
-import { getConfig } from '@/app/lib/wagmiConfig'
+import { useState, type ReactNode } from 'react'
+import { WagmiProvider, type State } from 'wagmi'
+import { RainbowKitProvider } from '@rainbow-me/rainbowkit'
+import { getConfig } from '@/app/components/Providers/wagmiProviderConfig'
 
 type Props = {
   children: ReactNode
-  initialState: State | undefined
+  initialState?: State
 }
 
-export function Providers({ children, initialState }: Props) {
+export function ProvidersClient({ children, initialState }: Props) {
   const [config] = useState(() => getConfig())
   const [queryClient] = useState(() => new QueryClient())
 

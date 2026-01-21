@@ -1,5 +1,6 @@
 import { ConnectButton } from '@rainbow-me/rainbowkit'
-import { MintableERC20 } from './components/MintableERC20'
+import { MintableERC20 } from '@/app/components/MintableERC20'
+
 /**
  *
  * ================
@@ -17,8 +18,8 @@ export default function Home() {
           chainStatus="icon"
           accountStatus="address"
         />
-        <MintableERC20 mintableToken="HELP" />
-        <MintableERC20 mintableToken="PROBLM" />
+        {/* <TokenMinter /> */}
+        <MintableERC20 />
       </main>
     </div>
   )

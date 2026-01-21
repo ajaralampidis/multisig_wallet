@@ -3,6 +3,16 @@
     "editor.defaultFormatter": "NomicFoundation.hardhat-solidity"
   },
 
+"typescript.tsserver.watchOptions": {
+    "excludeDirectories": [
+      "**/node_modules/**",
+      "**/.pnpm/viem@**"
+    ]
+  },
+  "files.exclude": {
+    "**/node_modules/.pnpm/viem@**/node_modules/viem/tsconfig*": true
+  },
+
   
   "editor.defaultFormatter": "esbenp.prettier-vscode",
   "editor.formatOnSave": true,

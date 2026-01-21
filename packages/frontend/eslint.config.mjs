@@ -14,6 +14,7 @@ const eslintConfig = defineConfig([
     'out/**',
     'build/**',
     'next-env.d.ts',
+    '**/node_modules/**',
   ]),
   // Prettier integration (add this after Next.js configs)
   {

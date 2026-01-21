@@ -1,10 +1,7 @@
+import './globals.css'
 import type { Metadata } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
-import './globals.css'
-import { headers } from 'next/headers'
-import { cookieToInitialState } from 'wagmi'
-import { Providers } from './components/Providers/Providers'
-import { getConfig } from './lib/wagmiConfig'
+import { Providers } from './components/Providers/Providers.server'
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -26,17 +23,12 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
-  const initialState = cookieToInitialState(
-    getConfig(),
-    (await headers()).get('cookie')
-  )
-
   return (
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <Providers initialState={initialState}>{children}</Providers>
+        <Providers>{children}</Providers>
       </body>
     </html>
   )

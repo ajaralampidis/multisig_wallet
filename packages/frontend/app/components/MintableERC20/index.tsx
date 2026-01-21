@@ -1,98 +1,67 @@
 'use client'
-import { useConnection, useReadContract, useWriteContract } from 'wagmi'
+import {
+  useReadHelpBalanceOf,
+  useReadHelpSymbol,
+  useReadHelpName,
+  useWriteHelpMint,
+} from '@/app/lib/wagmiHooks/generated'
+import { useConnection, useWaitForTransactionReceipt } from 'wagmi'
+import { useQueryClient } from '@tanstack/react-query'
 
-import MintableERC20Artifact from '@contracts/out/MintableERC20.sol/MintableERC20.json' with { type: 'json' }
-
-// This whole file can be replaced with wagmi cli
-
-const HELP_TOKEN_ADDRESS = '0x5fbdb2315678afecb367f032d93f642f64180aa3' // this can be fetched from broadcast dir
-const PROBLM_TOKEN_ADDRESS = '0xe7f1725e7734ce288f8367e1bb143e90bb3f0512' // this can be fetched from broadcast dir
-
-const tokenAbi = MintableERC20Artifact.abi
-
-export function MintableERC20({
-  mintableToken,
-}: {
-  mintableToken: 'HELP' | 'PROBLM'
-}) {
+export function MintableERC20() {
   const { address: userAddress, isConnected } = useConnection()
-  const tokenAddress =
-    mintableToken === 'HELP' ? HELP_TOKEN_ADDRESS : PROBLM_TOKEN_ADDRESS
+  const queryClient = useQueryClient()
 
-  // --- Reading Data ---
-  const {
-    data: balance,
-    isLoading,
-    error,
-  } = useReadContract({
-    abi: tokenAbi,
-    address: tokenAddress,
-    functionName: 'balanceOf',
-    args: [userAddress],
-    query: { enabled: isConnected }, // Only run if connected
-  })
-
-  const {
-    data: symbol,
-    isLoading: tickerLoading,
-    error: tickerError,
-  } = useReadContract({
-    abi: tokenAbi,
-    address: tokenAddress,
-    functionName: 'symbol',
-    query: { enabled: isConnected }, // Only run if connected
-  })
-
-  // --- Writing Data ---
-  const { data, isPending, mutate, error: writeError } = useWriteContract()
-
-  const handleMint = () => {
-    mutate({
-      abi: tokenAbi,
-      address: tokenAddress,
-      functionName: 'mint', // We know mint exists from the ABI
-      args: [userAddress, 1], // We know the arguments from the ABI
+  const { data: helpBalance, queryKey: helpBalanceQueryKey } =
+    useReadHelpBalanceOf({
+      args: [userAddress as `0x${string}`], // Assumes userAddress is a valid Ethereum address string like '0x...'
+      query: { enabled: isConnected && !!userAddress },
     })
+  const { data: helpSymbol } = useReadHelpSymbol()
+  const { data: helpName } = useReadHelpName()
+  const { mutateAsync: mintHelp, data: helpMintHash } = useWriteHelpMint()
+  const { isLoading: isConfirming, isSuccess: isConfirmed } =
+    useWaitForTransactionReceipt({
+      hash: helpMintHash,
+      query: { enabled: !!helpMintHash },
+    })
+
+  const handleMint = async () => {
+    if (!userAddress || !isConnected) return
+    await mintHelp(
+      {
+        args: [userAddress, BigInt(1)],
+      },
+      {
+        onSuccess: () => {
+          console.log('success')
+          queryClient.invalidateQueries(helpBalanceQueryKey)
+        },
+      }
+    )
   }
 
   return (
-    <div className="m-2 border border-fuchsia-200 p-4">
+    <div>
+      <ul>
+        <li>Balance: {helpBalance}</li>
+        <li>Symbol: {helpSymbol}</li>
+        <li>Name: {helpName}</li>
+      </ul>
+
+      <button
+        className="rounded-md bg-fuchsia-200 px-4 py-2 hover:bg-fuchsia-300"
+        onClick={handleMint}
+      >
+        Mint Broken
+      </button>
+
       <div>
-        Props: <br />
-        Symbol: {String(mintableToken)} | Address:{' '}
-        {mintableToken === 'HELP' ? HELP_TOKEN_ADDRESS : PROBLM_TOKEN_ADDRESS}
+        {isConfirming && <div>Confirming...</div>}
+        {isConfirmed && <div>Confirmed!</div>}
+        {helpMintHash && <div>Transaction Hash: {helpMintHash}</div>}
+        {!helpMintHash && <div>Transaction Hash: N/A</div>}
       </div>
-      <div>
-        Dynamic: <br />
-        {tickerLoading ? (
-          <span>Loading...</span>
-        ) : tickerError ? (
-          <span>Error: {tickerError.message}</span>
-        ) : (
-          <span>Symbol: {symbol as string}</span>
-        )}{' '}
-        | Address: {tokenAddress}
-      </div>
-      {isLoading ? (
-        <p>Loading...</p>
-      ) : error ? (
-        <p>Error: {error.message}</p>
-      ) : (
-        <p>Balance: {balance?.toString()}</p>
-      )}
-      {isPending ? (
-        <p>Minting...</p>
-      ) : writeError ? (
-        <p>Error: {writeError.message}</p>
-      ) : (
-        <button
-          className="rounded bg-fuchsia-700 px-2 py-0.5 font-bold text-white hover:bg-fuchsia-800"
-          onClick={handleMint}
-        >
-          Mint
-        </button>
-      )}
-      {data && <p>Minted: {data.toString()}</p>}
     </div>
   )
 }
