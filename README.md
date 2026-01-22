@@ -26,6 +26,11 @@ While the repo is IDE agnostic, its being developed using VSCode:
 - [Solidity extension from Nomic Foundation](https://marketplace.visualstudio.com/items?itemName=NomicFoundation.hardhat-solidity) (remappings, and language highlighting)
 - [Eslint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint), [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode) and [Tailwind](https://marketplace.visualstudio.com/items?itemName=bradlc.vscode-tailwindcss) extensions for the frontend
 
+You can use any browser wallet extension to use in the frontend.
+But this repo is optimized to develop using anvil. And using anvil's default accounts is quite usefull.
+To avoid having nonce issues on your browser wallet we suggest Rivet.
+https://github.com/paradigmxyz/rivet/pull/106 This PR fixes a current issue with chrome, but check for up to date versions
+
 ### 0.1 Install dependencies:
 
 ```bash
@@ -183,3 +188,5 @@ Deployments to real networks are tracked in git — never overwritten automatica
    - Multisig wallet will swap in the pool
 
 - packages/frontend/app/lib/contracts/contracts.ts needs dev vs prod settings
+
+- Once finised, delete packages/frontend/app/components/MintableERC20
