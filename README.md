@@ -26,10 +26,10 @@ While the repo is IDE agnostic, its being developed using VSCode:
 - [Solidity extension from Nomic Foundation](https://marketplace.visualstudio.com/items?itemName=NomicFoundation.hardhat-solidity) (remappings, and language highlighting)
 - [Eslint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint), [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode) and [Tailwind](https://marketplace.visualstudio.com/items?itemName=bradlc.vscode-tailwindcss) extensions for the frontend
 
-You can use any browser wallet extension to use in the frontend.
-But this repo is optimized to develop using anvil. And using anvil's default accounts is quite usefull.
-To avoid having nonce issues on your browser wallet we suggest Rivet.
-https://github.com/paradigmxyz/rivet/pull/106 This PR fixes a current issue with chrome, but check for up to date versions
+- [Rivet Wallet](https://github.com/paradigmxyz/rivet):
+
+   You can use any browser wallet extension to use in the frontend.
+   But this repo is optimized to develop using anvil, and anvil's default accounts are quite usefull. To avoid un-sync nonce between your browser wallet and anvil we suggest Rivet. In particular [this PR](https://github.com/paradigmxyz/rivet/pull/106) which fixes a current issue with chrome, _but check for up to date versions._
 
 ### 0.1 Install dependencies:
 

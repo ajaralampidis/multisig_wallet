@@ -6,6 +6,9 @@ import { useState, type ReactNode } from 'react'
 import { WagmiProvider, type State } from 'wagmi'
 import { RainbowKitProvider, lightTheme } from '@rainbow-me/rainbowkit'
 import { getConfig } from '@/app/components/Providers/wagmiProviderConfig'
+// import { initWalletProposalsStore } from '@/app/hooks/multiSigWallet/walletProposalsStore'
+
+// initWalletProposalsStore()
 
 type Props = {
   children: ReactNode

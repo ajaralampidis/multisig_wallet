@@ -61,6 +61,10 @@ contract MultiSignatureWalletFactory {
 
     // Getter functions
 
+    /**
+     * @dev This function is not scalable if lots of multiSignatureWallets are created
+     *      But for now it allows me to avoid subgraphs, indexers or overloading RPCs with getLogs
+     */
     function getAllMultiSignatureWallets() external view returns (address[] memory) {
         return multiSignatureWallets;
     }
