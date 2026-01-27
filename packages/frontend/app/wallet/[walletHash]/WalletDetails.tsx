@@ -52,23 +52,76 @@ export function WalletDetails({ walletHash }: { walletHash: `0x${string}` }) {
     setTimeout(() => setCopied(false), 1200)
   }
 
-  const handleAddSigner = (e: React.FormEvent) => {
+  const handleAddSigner = async (e: React.FormEvent) => {
     e.preventDefault()
     const value = addSignerRef.current?.value
     if (!value) return
-    console.log('add signer', value)
+
+    // Basic validation
+    if (!value.startsWith('0x') || value.length !== 42) {
+      console.error('Invalid address format')
+      return
+    }
+
+    try {
+      const proposal =
+        await walletProposalCodec.encodeMultiSignatureWalletAddSignerProposal({
+          newSigner: value as `0x${string}`,
+          nonce: BigInt(walletState.nonce),
+        })
+      upsertProposal(walletHash, proposal)
+      if (addSignerRef.current) {
+        addSignerRef.current.value = ''
+      }
+    } catch (error) {
+      console.error('Failed to create add signer proposal:', error)
+    }
   }
 
-  const handleUpdateThreshold = (e: React.FormEvent) => {
+  const handleUpdateThreshold = async (e: React.FormEvent) => {
     e.preventDefault()
     const value = thresholdRef.current?.value
     if (!value) return
-    console.log('update signatures required', value)
+
+    // Basic validation
+    const thresholdValue = parseInt(value)
+    if (isNaN(thresholdValue) || thresholdValue <= 0) {
+      console.error('Invalid threshold value')
+      return
+    }
+
+    try {
+      const proposal =
+        await walletProposalCodec.encodeMultiSignatureWalletUpdateSignaturesRequiredProposal(
+          {
+            newSignaturesRequired: BigInt(thresholdValue),
+            nonce: BigInt(walletState.nonce),
+          }
+        )
+      upsertProposal(walletHash, proposal)
+      if (thresholdRef.current) {
+        thresholdRef.current.value = ''
+      }
+    } catch (error) {
+      console.error('Failed to create update threshold proposal:', error)
+    }
   }
 
-  const handleRemoveSinger = (signer: `0x${string}`) => {
+  const handleRemoveSinger = async (signer: `0x${string}`) => {
     if (!signer) return
-    console.log('Remove Signer:', signer)
+
+    try {
+      const proposal =
+        await walletProposalCodec.encodeMultiSignatureWalletRemoveSignerProposal(
+          {
+            signerToRemove: signer,
+            nonce: BigInt(walletState.nonce),
+          }
+        )
+      upsertProposal(walletHash, proposal)
+    } catch (error) {
+      console.error('Failed to create remove signer proposal:', error)
+    }
   }
 
   return (

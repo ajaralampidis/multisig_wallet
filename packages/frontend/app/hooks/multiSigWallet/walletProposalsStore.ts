@@ -65,11 +65,16 @@ export function upsertProposal(
   const existing = wallet[proposal.id]
 
   if (!existing) {
-    const nextWallet = { ...wallet, [proposal.id]: proposal }
-    const next = { ...current, [walletHash]: nextWallet }
-    wallets$.set(next)
+    // const nextWallet = { ...wallet, [proposal.id]: proposal } // adds the proposal to the list
+    // const next = { ...current, [walletHash]: nextWallet }
+    // wallets$.set(next)
 
-    if (persistence === 'url') writeProposalToUrl(proposal)
+    if (persistence === 'url') {
+      const nextWallet = { [proposal.id]: proposal } // url can hold only one. So we replace the whole object
+      const next = { ...current, [walletHash]: nextWallet }
+      wallets$.set(next)
+      writeProposalToUrl(proposal)
+    }
     return
   }
 

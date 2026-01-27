@@ -114,9 +114,125 @@ export function useWalletProposalCodec(walletHash: `0x${string}`) {
     })
   }
 
+  const encodeMultiSignatureWalletAddSignerAndUpdateSignaturesRequiredProposal =
+    ({
+      newSigner,
+      newSignaturesRequired,
+      nonce,
+    }: {
+      newSigner: Address
+      newSignaturesRequired: bigint
+      nonce: bigint
+    }) => {
+      return encodeProposal({
+        abi: multiSignatureWalletAbi,
+        functionName: 'addSignerAndUpdateSignaturesRequired',
+        args: [newSigner, newSignaturesRequired],
+        nonce: nonce,
+        value: BigInt(0),
+      })
+    }
+
+  const encodeMultiSignatureWalletExecuteTransactionProposal = ({
+    to,
+    value,
+    data,
+    signatures,
+    nonce,
+  }: {
+    to: Address
+    value: bigint
+    data: `0x${string}`
+    signatures: `0x${string}`[]
+    nonce: bigint
+  }) => {
+    return encodeProposal({
+      abi: multiSignatureWalletAbi,
+      functionName: 'executeTransaction',
+      args: [to, value, data, signatures],
+      nonce: nonce,
+      value: BigInt(0),
+    })
+  }
+
+  const encodeMultiSignatureWalletInitializeProposal = ({
+    signers,
+    signaturesRequired,
+    nonce,
+  }: {
+    signers: Address[]
+    signaturesRequired: bigint
+    nonce: bigint
+  }) => {
+    return encodeProposal({
+      abi: multiSignatureWalletAbi,
+      functionName: 'initialize',
+      args: [signers, signaturesRequired],
+      nonce: nonce,
+      value: BigInt(0),
+    })
+  }
+
+  const encodeMultiSignatureWalletRemoveSignerProposal = ({
+    signerToRemove,
+    nonce,
+  }: {
+    signerToRemove: Address
+    nonce: bigint
+  }) => {
+    return encodeProposal({
+      abi: multiSignatureWalletAbi,
+      functionName: 'removeSigner',
+      args: [signerToRemove],
+      nonce: nonce,
+      value: BigInt(0),
+    })
+  }
+
+  const encodeMultiSignatureWalletRemoveSignersAndUpdateSignaturesRequiredProposal =
+    ({
+      signerToRemove,
+      newSignaturesRequired,
+      nonce,
+    }: {
+      signerToRemove: Address
+      newSignaturesRequired: bigint
+      nonce: bigint
+    }) => {
+      return encodeProposal({
+        abi: multiSignatureWalletAbi,
+        functionName: 'removeSignersAndUpdateSignaturesRequired',
+        args: [signerToRemove, newSignaturesRequired],
+        nonce: nonce,
+        value: BigInt(0),
+      })
+    }
+
+  const encodeMultiSignatureWalletUpdateSignaturesRequiredProposal = ({
+    newSignaturesRequired,
+    nonce,
+  }: {
+    newSignaturesRequired: bigint
+    nonce: bigint
+  }) => {
+    return encodeProposal({
+      abi: multiSignatureWalletAbi,
+      functionName: 'updateSignaturesRequired',
+      args: [newSignaturesRequired],
+      nonce: nonce,
+      value: BigInt(0),
+    })
+  }
+
   return {
     encodeProposal,
     encodeMultiSignatureWalletAddSignerProposal,
+    encodeMultiSignatureWalletAddSignerAndUpdateSignaturesRequiredProposal,
+    encodeMultiSignatureWalletExecuteTransactionProposal,
+    encodeMultiSignatureWalletInitializeProposal,
+    encodeMultiSignatureWalletRemoveSignerProposal,
+    encodeMultiSignatureWalletRemoveSignersAndUpdateSignaturesRequiredProposal,
+    encodeMultiSignatureWalletUpdateSignaturesRequiredProposal,
     // decodeProposal,
   }
 }
