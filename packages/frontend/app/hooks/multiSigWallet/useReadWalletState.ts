@@ -41,8 +41,11 @@ export function useReadWalletState(walletHash: `0x${string}`) {
   return {
     signers: signersQuery.data ?? [],
     requiredSigners: thresholdQuery.data ?? BigInt(-1),
-    loading: signersQuery.isLoading || thresholdQuery.isLoading,
-    error: signersQuery.error ?? thresholdQuery.error,
+    isLoading:
+      signersQuery.isLoading ||
+      thresholdQuery.isLoading ||
+      nonceQuery.isLoading,
+    error: signersQuery.error ?? thresholdQuery.error ?? nonceQuery.error,
     invalidateWalletState,
     nonce: nonceQuery.data ?? 0,
   }

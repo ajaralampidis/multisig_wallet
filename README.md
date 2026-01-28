@@ -173,19 +173,25 @@ Deployments to real networks are tracked in git — never overwritten automatica
 
 # TODO:
 
-- Front can read and write to the blockchain
-   - We will create a pool and load that pool with both tokens to allow for a demo
-      - Our script deploys both tokens and pool already
-      - Our script must load the pool with liquidity
-   - We need a faucet or a paymaster to pay for the users network gas.
-   - User will create his own mutlisg wallet
-      - He will create or add to the multisig wallet multiple wallets he should control
-      - Our UI should allow user to open multiple iframes or tabs or components to allow him to handle all the wallets at the same time ←←←
-   - We will give that multisg wallet some tokens to interact with the pool. (automatically or via user interaction)
-   - User will propose approval and transaction for that wallet
-   - User(s) will sign tx
-   - Once all signatures collected, user will be able to send signatures to executeTx
-   - Multisig wallet will swap in the pool
+- Create a function to get a "human redable" string to identify the Proposal ←
+
+- User will be able to see signatures and required signatures per proposal ←
+
+- User will be able to execute tx when signature requirement is met ←
+
+- He will create or add to the multisig wallet multiple wallets he should control
+
+- We need a faucet or a paymaster to pay for the users network gas.
+
+- We will create a pool and load that pool with both tokens to allow for a demo
+   - Our script deploys both tokens and pool already
+   - Our script must load the pool with liquidity
+
+- We will give that multisg wallet some tokens to interact with the pool. (automatically or via user interaction)
+- User will propose approval and transaction for that wallet
+- User(s) will sign tx
+- Once all signatures collected, user will be able to send signatures to executeTx
+- Multisig wallet will swap in the pool
 
 - packages/frontend/app/lib/contracts/contracts.ts needs dev vs prod settings
 

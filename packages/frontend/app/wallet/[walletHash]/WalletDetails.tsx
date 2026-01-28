@@ -15,10 +15,12 @@ import {
 } from '@/app/hooks/multiSigWallet/walletProposalsStore'
 import { useConnection } from 'wagmi'
 import { useValue } from '@legendapp/state/react'
+import { ReadContractErrorType } from 'viem'
 
 export function WalletDetails({ walletHash }: { walletHash: `0x${string}` }) {
   const { address, isConnected } = useConnection()
   const walletState = useReadWalletState(walletHash)
+  console.log('walletState', walletState)
   const walletProposalCodec = useWalletProposalCodec(walletHash)
 
   const proposals = useValue(() => {
@@ -122,6 +124,14 @@ export function WalletDetails({ walletHash }: { walletHash: `0x${string}` }) {
     } catch (error) {
       console.error('Failed to create remove signer proposal:', error)
     }
+  }
+
+  if (walletState.isLoading) {
+    return <Loading />
+  }
+
+  if (walletState.error) {
+    return <WalletDetailsError error={walletState.error} />
   }
 
   return (
@@ -279,4 +289,27 @@ function Signer({
       </button>
     </li>
   )
+}
+
+function WalletDetailsError({
+  error,
+}: {
+  error: ReadContractErrorType | null
+}) {
+  return (
+    <div className="border border-red-200 bg-red-50 p-2 text-red-800">
+      <p className="font-semibold">
+        Error reading the wallet{error && `: ${error.name}`}
+      </p>
+      {error && (
+        <div className="text-sm italic">
+          <p>{error.shortMessage}</p>
+        </div>
+      )}
+    </div>
+  )
+}
+
+function Loading() {
+  return <p>Loading…</p>
 }

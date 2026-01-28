@@ -8,7 +8,6 @@ export default async function Wallet({
 }: PageProps<'/wallet/[walletHash]'>) {
   const { walletHash } = await params
 
-  console.log('walletHash', walletHash, isAddress(walletHash))
   if (!isAddress(walletHash)) return <InvalidWallet />
   return <WalletDetails walletHash={walletHash} />
 }
