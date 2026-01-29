@@ -1,5 +1,4 @@
 'use client'
-
 import { useRef, useState } from 'react'
 import {
   XCircleIcon,
@@ -9,27 +8,14 @@ import {
 } from '@heroicons/react/24/outline'
 import { useReadWalletState } from '@/app/hooks/multiSigWallet/useReadWalletState'
 import { useWalletProposalCodec } from '@/app/hooks/multiSigWallet/useWalletProposalCodec'
-import {
-  wallets$,
-  upsertProposal,
-} from '@/app/hooks/multiSigWallet/walletProposalsStore'
+import { upsertProposal } from '@/app/hooks/multiSigWallet/walletProposalsStore'
 import { useConnection } from 'wagmi'
-import { useValue } from '@legendapp/state/react'
 import { ReadContractErrorType } from 'viem'
 
 export function WalletDetails({ walletHash }: { walletHash: `0x${string}` }) {
   const { address, isConnected } = useConnection()
   const walletState = useReadWalletState(walletHash)
-  console.log('walletState', walletState)
   const walletProposalCodec = useWalletProposalCodec(walletHash)
-
-  const proposals = useValue(() => {
-    const walletObs = wallets$[walletHash] // this is an observable path
-    if (!walletObs) return []
-    const walletSnapshot = walletObs.get()
-    if (!walletSnapshot) return []
-    return Object.values(walletSnapshot)
-  })
 
   const handleCreateRandomProposal = async () => {
     if (!isConnected || !address) return
@@ -226,45 +212,6 @@ export function WalletDetails({ walletHash }: { walletHash: `0x${string}` }) {
             + Add Signer
           </button>
         </form>
-      </section>
-      <section>
-        <div className="my-2 flex items-center justify-between">
-          <h2 className="text-lg font-semibold">Proposals:</h2>
-          <button
-            className="my-4 rounded bg-violet-200 px-2"
-            onClick={handleCreateRandomProposal}
-          >
-            Create random proposal
-          </button>
-        </div>
-
-        {proposals.map((proposal) => (
-          <div
-            key={proposal.id}
-            className="rounded border border-violet-200 p-2"
-          >
-            <p>id: {proposal.id}</p>
-            <div>
-              Signatures:
-              {proposal.signatures.map((s) => (
-                <p key={s.signer + s.signature} className="ml-4">
-                  Signer: ${s.signer}
-                  <br />
-                  Signature:{' '}
-                  <span className="wrap-break-word break-all">
-                    ${s.signature}
-                  </span>
-                </p>
-              ))}
-            </div>
-            <p>tx.chainId: {String(proposal.tx.chainId)}</p>
-            <p>tx.to: {String(proposal.tx.to)}</p>
-            <p>tx.value: {String(proposal.tx.value)}</p>
-            <p>tx.data: {String(proposal.tx.data)}</p>
-            <p>tx.nonce: {String(proposal.tx.nonce)}</p>
-            <p>version: {String(proposal.version)}</p>
-          </div>
-        ))}
       </section>
     </section>
   )

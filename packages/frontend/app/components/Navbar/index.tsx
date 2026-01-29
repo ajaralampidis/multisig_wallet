@@ -8,7 +8,7 @@ import Link from 'next/link'
 
 export function Navbar() {
   return (
-    <nav className="mb-6 border-b border-fuchsia-600 bg-violet-200">
+    <nav className="border-b border-fuchsia-600 bg-violet-200">
       <div className="mx-auto flex w-full max-w-3xl items-center justify-between py-1">
         <h1 className="text-2xl font-medium text-fuchsia-800">
           👛 Simple Multi Signature App

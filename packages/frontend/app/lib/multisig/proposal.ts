@@ -1,4 +1,4 @@
-import { encodeAbiParameters, keccak256 } from 'viem'
+import { encodeAbiParameters, keccak256, Abi, decodeFunctionData } from 'viem'
 import type { ExecutionTx, Address, Hex } from './executionTx'
 
 /**
@@ -43,5 +43,60 @@ export function createProposal(tx: ExecutionTx): Proposal {
     id: hashExecutionTx(tx),
     tx,
     signatures: [],
+  }
+}
+
+function txArgToString(arg: unknown): string {
+  if (typeof arg === 'bigint') return arg.toString()
+  if (typeof arg === 'string') return arg
+  if (typeof arg === 'number') return arg.toString()
+  if (Array.isArray(arg)) return `[${arg.map(txArgToString).join(', ')}]`
+  if (arg && typeof arg === 'object') return JSON.stringify(arg)
+  return String(arg)
+}
+
+/**
+ * Decode calldata (tx.data) using provided abi.
+ * Returns { functionName, args } — no extra types.
+ */
+export function decodeExecutionTxData(
+  txData: Hex,
+  abi: Abi
+): { functionName: string; args: readonly unknown[] } {
+  const decoded = decodeFunctionData({ abi, data: txData }) as {
+    functionName: string
+    args?: readonly unknown[]
+  }
+
+  return {
+    functionName: decoded.functionName,
+    args: decoded.args ?? [],
+  }
+}
+
+/**
+ * getDisplayString expects the correct ABI to be passed in (for now).
+ * If abi is null/undefined decoding will be skipped and a fallback returned.
+ */
+export function getProposalDisplayString(
+  proposal: Proposal,
+  abi?: Abi | null
+): string {
+  const { tx } = proposal
+
+  if (!abi) {
+    return `Unknown call (${tx.data.slice(0, 10)}…)`
+    // TODO: we can attempt to get the abi from third-party servicies or with other helper functions
+  }
+
+  try {
+    const { functionName, args } = decodeExecutionTxData(tx.data, abi)
+
+    const argsStr = args.map(txArgToString).join(', ')
+    const valueStr =
+      tx.value > BigInt(0) ? ` + value ${tx.value.toString()}` : ''
+    return `${functionName}(${argsStr})${valueStr}`
+  } catch {
+    return `Un-decodable call (${tx.data.slice(0, 10)}…)`
   }
 }
